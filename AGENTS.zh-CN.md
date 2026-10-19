@@ -60,5 +60,7 @@ Toolkit 路径为 `/Users/v_zhangzheming/GitHubProjects/max-ai-toolkit`。Toolki
 
 ## 开发与验证基线
 
-Python 版本、依赖管理器、包布局、模型提供商、测试框架、代码检查工具和权威开发命令目前均为 `To be decided`。未实际执行对应操作时，不得报告构建、测试、模型调用或验证结果。
+第一阶段使用 Python 3.12、`uv`、`pyproject.toml`、`src/agent_lab/` 布局、`pytest`、Ruff 和同步 CLI。模型提供商为阿里云百炼，使用其 OpenAI 兼容接口。
+
+具体模型名称、兼容接口地址、凭据环境变量名和权威开发命令仍为 `To be decided`。当前已确认的行为仅是 CLI 直接调用模型并处理返回结果。不要加入工具或多步骤循环；未实际执行对应操作时，不得报告模型调用或验证结果。
 

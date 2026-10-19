@@ -18,19 +18,13 @@ The project has three connected goals, in this priority order:
 
 ## First phase
 
-The first phase aims to establish an initial model API integration and a minimal controlled agent loop:
+The first phase establishes a direct synchronous call from the CLI to Alibaba Cloud Model Studio:
 
 ```text
-user input
-  -> runtime
-  -> model decision
-  -> validated tool request
-  -> tool execution
-  -> tool result returned to the model
-  -> final answer or another controlled step
+CLI input -> Model Studio API -> response handling -> CLI output
 ```
 
-The phase is intended to build an initial understanding of how model calls and runtime control work internally. Its detailed requirements are defined in [Phase 1 Requirements](docs/requirements/phase-1.md).
+No tool calling, file operation, planning, memory, or other intermediate agent behavior is included. The detailed requirements are defined in [Phase 1 Requirements](docs/requirements/phase-1.md).
 
 ## Scope boundaries
 

@@ -60,5 +60,7 @@ Use English for commit messages, pull requests, issues, release notes, and other
 
 ## Development and validation baseline
 
-The Python version, dependency manager, package layout, model provider, test framework, lint tools, and authoritative development commands are `To be decided`. Do not report a build, test, model call, or validation result unless the corresponding action was actually performed.
+Phase 1 uses Python 3.12, `uv`, `pyproject.toml`, the `src/agent_lab/` layout, `pytest`, Ruff, and a synchronous CLI. The selected provider is Alibaba Cloud Model Studio through its OpenAI-compatible API.
+
+The exact model name, compatible endpoint, credential variable, and authoritative development commands remain `To be decided`. The current confirmed behavior is a direct CLI-to-model call with response handling only. Do not add tools or a multi-step loop, and do not report a model call or validation result unless the corresponding action was actually performed.
 

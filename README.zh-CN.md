@@ -18,19 +18,13 @@ Agent Lab 是一个公开的 Python 工程实验室，用于学习和构建可�
 
 ## 第一阶段
 
-第一阶段目标是建立初步的模型 API 调用能力，并实现一个最小的受控 Agent Loop：
+第一阶段先建立 CLI 到阿里云百炼的同步直接调用：
 
 ```text
-用户输入
-  → Runtime
-  → 模型决策
-  → 工具请求校验
-  → 工具执行
-  → 工具结果返回模型
-  → 最终回答或继续执行受控步骤
+CLI 输入 → 百炼 API → 返回结果处理 → CLI 输出
 ```
 
-这一阶段用于建立对模型调用和 Runtime 控制机制的初步理解。详细需求见[第一阶段需求](docs/requirements/phase-1.zh-CN.md)。
+本阶段不包含工具调用、文件操作、Planning、Memory 或其他中间 Agent 行为。详细需求见[第一阶段需求](docs/requirements/phase-1.zh-CN.md)。
 
 ## 范围边界
 

@@ -62,23 +62,20 @@ Python implementation details, CLI interaction, and desktop-specific tools must 
 
 ## Current scope
 
-The first phase includes:
+The confirmed first phase includes:
 
-- a minimal model API integration;
-- a controlled runtime loop;
-- direct model responses;
-- validated requests for a small number of tools;
-- tool results returned to the model;
-- bounded execution steps;
-- basic model and tool error handling;
-- structured run traces;
-- simulated-model tests;
-- a small real-model smoke validation.
+- a synchronous CLI;
+- one direct request from CLI input to Alibaba Cloud Model Studio;
+- handling and displaying the returned model response;
+- configuration and transport errors reported without exposing credentials;
+- simulated response tests for request construction and response handling;
+- one real-model smoke validation after implementation is separately authorized.
 
 ## Non-goals
 
 The first phase is not intended to:
 
+- implement tool calling or a multi-step agent loop;
 - create a general-purpose agent platform;
 - support arbitrary shell commands;
 - modify files or system state through model-generated instructions;
@@ -89,30 +86,28 @@ The first phase is not intended to:
 
 ## Success criteria
 
-The project is progressing successfully when the author can explain, test, and observe the complete controlled loop from user input to final result, including:
+The first phase is successful when the author can explain, test, and observe one direct model call, including:
 
-- what the model is allowed to decide;
-- what the Runtime must control;
-- how tools are registered and validated;
-- how failures are classified;
-- how execution stops;
-- how tests demonstrate the behavior;
-- how traces provide evidence without exposing secrets or unnecessary sensitive data.
+- how CLI input becomes a provider request;
+- how a text response is handled and displayed;
+- how configuration, transport, and malformed-response failures are distinguished;
+- how tests verify the behavior without network access;
+- how credentials stay out of source, examples, and logs.
 
 ## Current technical decisions
 
-The following are not yet decided:
+The following baseline is confirmed for Phase 1:
 
-- Python version;
-- dependency manager;
-- package layout;
-- model provider and model selection;
-- test framework;
-- lint and static-analysis tools;
-- synchronous or asynchronous execution beyond the first learning slice;
-- public release and contribution workflow details.
+- Python 3.12;
+- `uv` and `pyproject.toml`;
+- the `src/agent_lab/` package layout;
+- `pytest` and Ruff;
+- a synchronous CLI;
+- Alibaba Cloud Model Studio through its OpenAI-compatible API;
+- credentials supplied through environment variables;
+- a provider adapter that keeps future Runtime code independent of the provider SDK.
 
-These decisions belong in the appropriate technical or decision document after confirmation. This overview should not be used to infer them.
+The exact model name, compatible endpoint, and credential variable name remain `To be decided`. Public release workflow details also remain undecided.
 
 ## Related documents
 

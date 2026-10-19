@@ -2,89 +2,58 @@
 
 ## Status
 
-Planning
+Confirmed for the initial API-call slice.
 
-This document defines the proposed first-phase product boundary. It becomes the authoritative first-phase requirement only after the project author confirms it.
+This document is the authoritative Phase 1 requirement. It defines only the direct model-call slice; it does not authorize creating the project configuration or implementation until the author separately authorizes that work.
 
 ## Objective
 
-Establish an initial model API capability and a practical understanding of the control model behind a small LLM-powered agent.
+Establish a correct synchronous call from the CLI to Alibaba Cloud Model Studio and a practical understanding of the request and response boundary.
 
-The phase should produce a minimal but complete controlled loop rather than a feature-rich general-purpose platform.
+The phase sends the user's input directly to the model API and handles the returned response. It does not add tools, planning, memory, file operations, or other intermediate agent behavior.
 
 ## User-visible flow
 
 The first phase should support this observable flow:
 
 ```text
-user input
-  -> agent runtime
-  -> model request
-  -> direct response or structured tool request
-  -> tool validation and execution
-  -> tool result returned to the model
-  -> final response, another bounded step, or controlled termination
+CLI input
+  -> direct Model Studio request
+  -> response handling
+  -> CLI output or controlled error
 ```
 
-The first interaction surface is a synchronous CLI unless a later confirmed decision changes this boundary.
+The interaction is synchronous. The model provider is Alibaba Cloud Model Studio through its OpenAI-compatible API. The Runtime must not depend directly on the provider SDK.
 
 ## Required behavior
 
 ### Model interaction
 
-- The system can send a user request to a model.
-- The system can handle a direct model response.
-- The system can handle a model response that requests a registered tool.
-- The system can return a tool result to the model.
-- The system can accept a subsequent model response or terminate with a clear reason.
+- The CLI accepts one user input and sends it directly to the configured model.
+- The system handles a successful text response and displays it.
+- The system reports configuration, transport, and response-format failures with a controlled message.
+- The system does not call tools or perform another model round trip in this phase.
 
-### Runtime control
+### Technical baseline
 
-- The Runtime owns the execution loop.
-- The model cannot directly execute code, shell commands, or unregistered capabilities.
-- The Runtime enforces a maximum execution-step limit.
-- The Runtime enforces a tool-call limit.
-- The Runtime distinguishes normal completion, model failure, tool failure, invalid request, limit termination, and user cancellation.
-- An exception must not leave the run without a controlled final state.
-
-### Tool boundary
-
-The first tool set should remain small and low risk:
-
-- `calculate`: deterministic arithmetic operations with explicit operation and numeric arguments; no `eval`.
-- `list_workspace_files`: list a bounded set of entries inside an explicitly configured workspace; validate path resolution and prevent traversal outside the workspace.
-
-File writes, arbitrary shell execution, network-side effects, and high-risk system mutation are out of scope for this phase.
-
-### Trace and observability
-
-Each run should have a Run ID. The trace should record, at minimum:
-
-- run and step identifiers;
-- event type;
-- model and tool call metadata needed for diagnosis;
-- execution duration;
-- errors and their classification;
-- final stop reason.
-
-Logs must not include API keys, secrets, or unnecessary sensitive file contents by default.
+- Python 3.12.
+- `uv` with `pyproject.toml`.
+- Package layout: `src/agent_lab/`.
+- `pytest` for tests and Ruff for linting.
+- Credentials are read from environment variables and are never stored in source or logs.
 
 ## Testing requirements
 
 The Runtime should be testable without a real model API or network connection.
 
-The offline test suite should cover:
+The offline tests should cover:
 
-- direct model response;
-- successful tool request;
-- tool execution failure;
-- unknown tool;
-- invalid tool arguments;
-- multiple bounded tool calls;
-- execution-step limit;
-- model exception;
-- user cancellation behavior where the selected CLI/runtime boundary supports it;
-- trace emission and final stop reason.
+- request construction from CLI input;
+- successful response handling;
+- missing configuration;
+- transport or provider failure;
+- malformed provider response;
+- absence of credentials, prompts, and response secrets in logs.
 
 Real model calls are used for integration and behavior smoke validation. They are not a replacement for deterministic Runtime tests.
 
@@ -101,6 +70,7 @@ Real model calls are used for integration and behavior smoke validation. They ar
 
 The following are not part of Phase 1:
 
+- tool calling and multi-step agent loops;
 - planning systems;
 - persistent memory;
 - reflection loops;
@@ -119,29 +89,21 @@ Adding one of these capabilities requires a concrete problem statement, a compar
 
 Phase 1 is ready for review when:
 
-1. A local CLI can accept a request and produce a final response or controlled termination.
-2. A simulated model can verify the Runtime loop without network access or credentials.
-3. A registered tool can be validated, executed, and returned to the model.
-4. Execution and tool limits prevent uncontrolled loops.
-5. Model, tool, invalid-request, cancellation, and limit failures have distinguishable outcomes.
-6. A structured trace can explain the important events in a run without exposing secrets by default.
-7. Automated tests cover the required Runtime behavior.
-8. A real-model smoke validation has been performed and its result is recorded separately from offline test evidence.
-9. The author can explain the responsibilities of the model, Runtime, registry, tool implementation, and trace.
+1. A local CLI sends one input directly to the configured model boundary.
+2. A successful text response is displayed without intermediate tool processing.
+3. Missing configuration, transport failure, and malformed responses terminate with distinguishable messages.
+4. Automated tests verify request construction and response handling without network access.
+5. Credentials are not present in source, examples, or logs.
+6. One real Model Studio smoke call is recorded separately from offline evidence.
+7. The author can explain the CLI, provider adapter, request, and response responsibilities.
 
 ## Open decisions
 
 The following remain `To be decided`:
 
-- Python version;
-- dependency manager;
-- package layout;
-- model provider and model selection;
-- API client and SDK version;
-- test framework;
-- lint and static-analysis tools;
-- exact CLI interaction format;
-- workspace configuration mechanism;
-- timeout and cancellation implementation details;
+- exact Model Studio model name;
+- OpenAI-compatible endpoint;
+- credential environment-variable name;
+- timeout value;
 - public contribution and release workflow.
 
