@@ -28,9 +28,10 @@ Toolkit 路径为 `/Users/v_zhangzheming/GitHubProjects/max-ai-toolkit`。Toolki
 - 文档地图与治理：[docs/documentation.md](docs/documentation.md)
 - 第一阶段需求语义源：[docs/requirements/phase-1.md](docs/requirements/phase-1.md)
 - 中文第一阶段需求：[docs/requirements/phase-1.zh-CN.md](docs/requirements/phase-1.zh-CN.md)
-- 许可证：[LICENSE](LICENSE)
+- 开发说明：[docs/development.md](docs/development.md)
+- 验证说明：[docs/validation.md](docs/validation.md)
 
-开发、验证、架构、安全、隐私、发布和决策文档尚未建立。只有在存在已确认的项目事实、证据或正式授权的决策后，才创建对应文档。不要根据计划中的路径推断已经确定的技术基线。
+架构、安全、隐私、发布和决策文档尚未建立。只有在存在已确认的项目事实、证据或正式授权的决策后，才创建对应文档。不要根据计划中的路径推断已经确定的技术基线。
 
 ## 外部上下文
 
@@ -60,7 +61,7 @@ Toolkit 路径为 `/Users/v_zhangzheming/GitHubProjects/max-ai-toolkit`。Toolki
 
 ## 开发与验证基线
 
-第一阶段使用 Python 3.12、`uv`、`pyproject.toml`、`src/agent_lab/` 布局、`pytest`、Ruff 和同步 CLI。模型提供商为阿里云百炼，使用其 OpenAI 兼容接口。
+第一阶段使用 Python 3.12、`uv`、`pyproject.toml`、`src/agent_lab/` 布局、`pytest`、Ruff 和同步 CLI。它通过已确认的 OpenAI 兼容接口调用阿里云百炼，使用 `qwen3.8-flash`、`DASHSCOPE_API_KEY` 和 30 秒超时。
 
-具体模型名称、兼容接口地址、凭据环境变量名和权威开发命令仍为 `To be decided`。当前已确认的行为仅是 CLI 直接调用模型并处理返回结果。不要加入工具或多步骤循环；未实际执行对应操作时，不得报告模型调用或验证结果。
+遵循 [docs/development.md](docs/development.md) 和 [docs/validation.md](docs/validation.md)。当前已确认的行为仅是 CLI 直接调用模型并处理返回结果。不要加入工具或多步骤循环；未实际执行对应操作时，不得报告模型调用或验证结果。
 

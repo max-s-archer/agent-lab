@@ -40,7 +40,10 @@ The interaction is synchronous. The model provider is Alibaba Cloud Model Studio
 - `uv` with `pyproject.toml`.
 - Package layout: `src/agent_lab/`.
 - `pytest` for tests and Ruff for linting.
-- Credentials are read from environment variables and are never stored in source or logs.
+- Credentials are read from the `DASHSCOPE_API_KEY` environment variable and are never stored in source, examples, or logs.
+- The initial model is `qwen3.8-flash`.
+- The OpenAI-compatible base URL is `https://ws-nnpvwzj2vhzbu3i6.cn-beijing.maas.aliyuncs.com/compatible-mode/v1`.
+- The request timeout is 30 seconds.
 
 ## Testing requirements
 
@@ -97,13 +100,5 @@ Phase 1 is ready for review when:
 6. One real Model Studio smoke call is recorded separately from offline evidence.
 7. The author can explain the CLI, provider adapter, request, and response responsibilities.
 
-## Open decisions
-
-The following remain `To be decided`:
-
-- exact Model Studio model name;
-- OpenAI-compatible endpoint;
-- credential environment-variable name;
-- timeout value;
-- public contribution and release workflow.
+The public contribution and release workflow remains `To be decided`.
 

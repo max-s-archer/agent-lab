@@ -12,15 +12,13 @@ This document defines the responsibility and authority of Agent Lab documentatio
 - `overview.zh-CN.md`: Chinese counterpart of the product overview.
 - `docs/requirements/phase-1.md`: Semantic source for the confirmed first-phase behavioral requirements and acceptance criteria.
 - `docs/requirements/phase-1.zh-CN.md`: Chinese counterpart of the first-phase requirements.
-- `AGENTS.md`: Project-specific agent routing and engineering boundaries.
-- `AGENTS.zh-CN.md`: Chinese counterpart of project-specific agent routing.
+- `docs/development.md`: Selected toolchain, configuration names, and setup boundaries.
+- `docs/validation.md`: Validation commands and evidence rules. Command availability is not evidence of a successful run.
 
 ## Planned document responsibilities
 
 The following documents are not current authoritative documents and should be created only when their responsibility has confirmed content:
 
-- `docs/development.md`: selected toolchain, prerequisites, setup, run commands, and development conventions;
-- `docs/validation.md`: actual test, lint, static-analysis, manual, and integration validation procedures and evidence rules;
 - `docs/architecture.md`: confirmed runtime boundaries, dependencies, and technical direction;
 - `docs/decisions/`: consequential technical or product decisions and their trade-offs;
 - `docs/security.md`: confirmed security and permission boundaries if the Phase 1 requirements no longer provide enough detail;

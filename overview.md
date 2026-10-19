@@ -104,10 +104,12 @@ The following baseline is confirmed for Phase 1:
 - `pytest` and Ruff;
 - a synchronous CLI;
 - Alibaba Cloud Model Studio through its OpenAI-compatible API;
-- credentials supplied through environment variables;
+- credentials supplied through the `DASHSCOPE_API_KEY` environment variable;
+- `qwen3.8-flash` as the initial model;
+- a 30-second request timeout;
 - a provider adapter that keeps future Runtime code independent of the provider SDK.
 
-The exact model name, compatible endpoint, and credential variable name remain `To be decided`. Public release workflow details also remain undecided.
+The public contribution and release workflow remains `To be decided`.
 
 ## Related documents
 

@@ -28,9 +28,10 @@ The Toolkit locator is `/Users/v_zhangzheming/GitHubProjects/max-ai-toolkit`. Th
 - Documentation map and governance: [docs/documentation.md](docs/documentation.md)
 - Phase 1 requirements semantic source: [docs/requirements/phase-1.md](docs/requirements/phase-1.md)
 - Chinese Phase 1 requirements: [docs/requirements/phase-1.zh-CN.md](docs/requirements/phase-1.zh-CN.md)
-- License: [LICENSE](LICENSE)
+- Development guide: [docs/development.md](docs/development.md)
+- Validation guide: [docs/validation.md](docs/validation.md)
 
-Development, validation, architecture, security, privacy, release, and decision documents have not yet been established. Create each one only when confirmed project facts, evidence, or an authorized decision give it a real responsibility. Do not infer a technical baseline from planned paths.
+Architecture, security, privacy, release, and decision documents have not yet been established. Create each one only when confirmed project facts, evidence, or an authorized decision give it a real responsibility. Do not infer a technical baseline from planned paths.
 
 ## External context
 
@@ -60,7 +61,7 @@ Use English for commit messages, pull requests, issues, release notes, and other
 
 ## Development and validation baseline
 
-Phase 1 uses Python 3.12, `uv`, `pyproject.toml`, the `src/agent_lab/` layout, `pytest`, Ruff, and a synchronous CLI. The selected provider is Alibaba Cloud Model Studio through its OpenAI-compatible API.
+Phase 1 uses Python 3.12, `uv`, `pyproject.toml`, the `src/agent_lab/` layout, `pytest`, Ruff, and a synchronous CLI. It calls Alibaba Cloud Model Studio through the confirmed OpenAI-compatible endpoint, using `qwen3.8-flash`, `DASHSCOPE_API_KEY`, and a 30-second timeout.
 
-The exact model name, compatible endpoint, credential variable, and authoritative development commands remain `To be decided`. The current confirmed behavior is a direct CLI-to-model call with response handling only. Do not add tools or a multi-step loop, and do not report a model call or validation result unless the corresponding action was actually performed.
+Follow [docs/development.md](docs/development.md) and [docs/validation.md](docs/validation.md). The current confirmed behavior is a direct CLI-to-model call with response handling only. Do not add tools or a multi-step loop, and do not report a model call or validation result unless the corresponding action was actually performed.
 

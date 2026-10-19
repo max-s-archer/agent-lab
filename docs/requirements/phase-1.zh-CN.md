@@ -40,7 +40,10 @@ CLI 输入
 - 使用 `uv` 和 `pyproject.toml`。
 - 包布局为 `src/agent_lab/`。
 - 使用 `pytest` 测试，使用 Ruff 做代码检查。
-- 凭据从环境变量读取，绝不写入源码或日志。
+- 凭据从 `DASHSCOPE_API_KEY` 环境变量读取，绝不写入源码、示例或日志。
+- 初始模型为 `qwen3.8-flash`。
+- OpenAI 兼容接口地址为 `https://ws-nnpvwzj2vhzbu3i6.cn-beijing.maas.aliyuncs.com/compatible-mode/v1`。
+- 请求超时时间为 30 秒。
 
 ## 测试要求
 
@@ -97,13 +100,5 @@ Runtime 必须能够在不调用真实模型 API、也不依赖网络的情况�
 6. 一次真实百炼冒烟调用与离线测试证据分开记录。
 7. 项目作者能够解释 CLI、提供商适配层、请求和返回结果各自的职责。
 
-## 待决事项
-
-以下内容仍为 `To be decided`：
-
-- 百炼的具体模型名称；
-- OpenAI 兼容接口地址；
-- 凭据环境变量名；
-- 超时时间；
-- 公开贡献和发布流程。
+公开贡献和发布流程仍为 `To be decided`。
 
