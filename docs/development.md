@@ -22,7 +22,7 @@ Copy `.env.example` to a local `.env` only when implementation needs it. Put the
 
 ## Current boundary
 
-The simulated CLI is implemented in `src/agent_lab/`. It sends one input directly to the model boundary and displays the returned text. Tests replace the network transport. The CLI must not add tools, file operations, planning, memory, or another model round trip in Phase 1. A real Model Studio call still requires separate authorization.
+The CLI is implemented in `src/agent_lab/`. It sends one input directly to the model boundary and displays the returned text. Offline tests replace the network transport. The CLI must not add tools, file operations, planning, memory, or another model round trip in Phase 1. A new real Model Studio call requires separate authorization.
 
 ## Validation commands
 

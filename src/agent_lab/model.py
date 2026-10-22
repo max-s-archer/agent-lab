@@ -1,5 +1,8 @@
 """Request construction and response handling for one model call."""
 
+import json
+import urllib.error
+import urllib.request
 from collections.abc import Mapping
 from typing import Any
 
@@ -44,7 +47,33 @@ def extract_text(response: Mapping[str, Any]) -> str:
     return content
 
 
-def run_once(settings: ModelSettings, user_input: str, transport) -> str:
+def send_request(request: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Send one HTTP request and convert network failures into transport errors."""
+
+    payload = json.dumps(request["json"]).encode("utf-8")
+    outgoing = urllib.request.Request(
+        request["url"],
+        data=payload,
+        headers=request["headers"],
+        method=request["method"],
+    )
+    try:
+        with urllib.request.urlopen(outgoing, timeout=request["timeout_seconds"]) as response:
+            raw_response = response.read().decode("utf-8")
+    except urllib.error.HTTPError as error:
+        raise TransportError(f"Model provider returned HTTP {error.code}.") from error
+    except (TimeoutError, urllib.error.URLError) as error:
+        raise TransportError("Model request failed.") from error
+    try:
+        parsed = json.loads(raw_response)
+    except json.JSONDecodeError as error:
+        raise ResponseFormatError("Model response does not contain text content.") from error
+    if not isinstance(parsed, Mapping):
+        raise ResponseFormatError("Model response does not contain text content.")
+    return parsed
+
+
+def run_once(settings: ModelSettings, user_input: str, transport=send_request) -> str:
     """Send one input through the supplied transport and return its text."""
 
     try:

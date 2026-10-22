@@ -1,3 +1,5 @@
+import json
+import urllib.error
 from io import StringIO
 
 import pytest
@@ -16,6 +18,7 @@ from agent_lab.model import (
     build_request,
     extract_text,
     run_once,
+    send_request,
 )
 
 
@@ -96,3 +99,48 @@ def test_cli_displays_simulated_text_without_credentials(monkeypatch):
 def test_extract_text_rejects_malformed_response():
     with pytest.raises(ResponseFormatError):
         extract_text({"choices": []})
+
+
+def test_http_transport_reads_simulated_success(monkeypatch):
+    request = build_request(load_settings(api_key="test-key"), "Hello")
+
+    class Response:
+        def read(self):
+            return json.dumps({"choices": [{"message": {"content": "HTTP reply"}}]}).encode()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+    def urlopen(outgoing, timeout):
+        assert outgoing.full_url == request["url"]
+        assert timeout == TIMEOUT_SECONDS
+        assert "test-key" not in outgoing.full_url
+        return Response()
+
+    monkeypatch.setattr("agent_lab.model.urllib.request.urlopen", urlopen)
+
+    assert send_request(request)["choices"][0]["message"]["content"] == "HTTP reply"
+
+
+def test_http_transport_reports_timeout(monkeypatch):
+    def urlopen(_outgoing, timeout):
+        raise TimeoutError
+
+    monkeypatch.setattr("agent_lab.model.urllib.request.urlopen", urlopen)
+
+    with pytest.raises(TransportError, match="Model request failed\\.$"):
+        send_request(build_request(load_settings(api_key="test-key"), "Hello"))
+
+
+def test_http_transport_reports_status_without_credential(monkeypatch):
+    def urlopen(_outgoing, timeout):
+        raise urllib.error.HTTPError("https://example.test", 401, "Unauthorized", {}, None)
+
+    monkeypatch.setattr("agent_lab.model.urllib.request.urlopen", urlopen)
+
+    with pytest.raises(TransportError, match="HTTP 401\\.$") as error:
+        send_request(build_request(load_settings(api_key="test-key"), "Hello"))
+    assert "test-key" not in str(error.value)

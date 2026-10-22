@@ -4,7 +4,7 @@ import argparse
 import sys
 
 from agent_lab.config import ConfigurationError, load_settings
-from agent_lab.model import ResponseFormatError, TransportError, run_once
+from agent_lab.model import ResponseFormatError, TransportError, run_once, send_request
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -23,9 +23,8 @@ def main(argv: list[str] | None = None, transport=None, output=None, error_outpu
     args = build_parser().parse_args(argv)
     try:
         settings = load_settings()
-        if transport is None:
-            raise TransportError("Real model calls require separate authorization.")
-        print(run_once(settings, args.prompt, transport), file=output)
+        selected_transport = send_request if transport is None else transport
+        print(run_once(settings, args.prompt, selected_transport), file=output)
     except (ConfigurationError, TransportError, ResponseFormatError) as error:
         print(error, file=error_output)
         return 1
