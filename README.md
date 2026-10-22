@@ -18,13 +18,13 @@ The project has three connected goals, in this priority order:
 
 ## First phase
 
-The first phase establishes a direct synchronous call from the CLI to Alibaba Cloud Model Studio:
+The current slice adds a bounded runtime and one deterministic `calculate` tool:
 
 ```text
-CLI input -> Model Studio API -> response handling -> CLI output
+CLI input -> model decision -> optional validated calculation -> model final answer
 ```
 
-No tool calling, file operation, planning, memory, or other intermediate agent behavior is included. The detailed requirements are defined in [Phase 1 Requirements](docs/requirements/phase-1.md).
+The runtime allows at most two model calls. File operations, planning, memory, and other tools remain excluded. The detailed requirements are defined in [Phase 1 Requirements](docs/requirements/phase-1.md).
 
 ## Scope boundaries
 

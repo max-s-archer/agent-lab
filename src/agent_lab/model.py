@@ -35,12 +35,39 @@ def build_request(settings: ModelSettings, user_input: str) -> dict[str, Any]:
     }
 
 
+def extract_decision(response: Mapping[str, Any]) -> tuple[str | None, Mapping[str, Any] | None]:
+    """Return either direct text or one structured tool request."""
+
+    message = _message(response)
+    tool_calls = message.get("tool_calls", [])
+    if tool_calls:
+        if len(tool_calls) != 1:
+            raise ResponseFormatError("Model response must request at most one tool.")
+        function = tool_calls[0].get("function", {})
+        name = function.get("name")
+        arguments = function.get("arguments", {})
+        if not isinstance(name, str) or not isinstance(arguments, Mapping):
+            raise ResponseFormatError("Model response does not contain a valid tool request.")
+        return None, {"name": name, "arguments": arguments}
+    return extract_text(response), None
+
+
+def _message(response: Mapping[str, Any]) -> Mapping[str, Any]:
+    try:
+        message = response["choices"][0]["message"]
+    except (KeyError, IndexError, TypeError) as error:
+        raise ResponseFormatError("Model response does not contain text content.") from error
+    if not isinstance(message, Mapping):
+        raise ResponseFormatError("Model response does not contain text content.")
+    return message
+
+
 def extract_text(response: Mapping[str, Any]) -> str:
     """Extract the first text response without making another model call."""
 
     try:
-        content = response["choices"][0]["message"]["content"]
-    except (KeyError, IndexError, TypeError) as error:
+        content = _message(response)["content"]
+    except (KeyError, TypeError) as error:
         raise ResponseFormatError("Model response does not contain text content.") from error
     if not isinstance(content, str) or not content.strip():
         raise ResponseFormatError("Model response does not contain text content.")

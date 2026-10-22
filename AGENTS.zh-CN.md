@@ -63,5 +63,5 @@ Toolkit 路径为 `/Users/v_zhangzheming/GitHubProjects/max-ai-toolkit`。Toolki
 
 第一阶段使用 Python 3.12、`uv`、`pyproject.toml`、`src/agent_lab/` 布局、`pytest`、Ruff 和同步 CLI。它通过已确认的 OpenAI 兼容接口调用阿里云百炼，使用 `qwen3.8-flash`、`DASHSCOPE_API_KEY` 和 30 秒超时。
 
-遵循 [docs/development.md](docs/development.md) 和 [docs/validation.md](docs/validation.md)。当前已确认的行为仅是 CLI 直接调用模型并处理返回结果。不要加入工具或多步骤循环；未实际执行对应操作时，不得报告模型调用或验证结果。
+遵循 [docs/development.md](docs/development.md) 和 [docs/validation.md](docs/validation.md)。当前切片增加一个最多两次模型调用的受控 Runtime 和确定性的 `calculate` 工具。不要加入文件操作或其他工具；未实际执行对应操作时，不得报告模型调用或验证结果。
 

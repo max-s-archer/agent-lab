@@ -17,7 +17,6 @@ from agent_lab.model import (
     TransportError,
     build_request,
     extract_text,
-    run_once,
     send_request,
 )
 
@@ -44,7 +43,7 @@ def test_successful_simulated_response_is_returned_directly():
         assert request["json"]["messages"][0]["content"] == "Hello"
         return {"choices": [{"message": {"content": "Simulated reply"}}]}
 
-    assert run_once(settings, "Hello", transport) == "Simulated reply"
+    assert extract_text(transport(build_request(settings, "Hello"))) == "Simulated reply"
 
 
 def test_missing_configuration_is_reported_without_network(monkeypatch):
@@ -64,7 +63,11 @@ def test_transport_failure_is_distinct(monkeypatch):
     def transport(_request):
         raise TransportError("Model request failed.")
 
-    status = main(["Hello"], transport=transport, error_output=error_output)
+    status = main(
+        ["Hello"],
+        model=lambda _settings, _messages: (_ for _ in ()).throw(TransportError("Model request failed.")),
+        error_output=error_output,
+    )
 
     assert status == 1
     assert error_output.getvalue().strip() == "Model request failed."
@@ -74,7 +77,7 @@ def test_malformed_response_is_distinct(monkeypatch):
     monkeypatch.setenv(CREDENTIAL_VARIABLE, "test-key")
     error_output = StringIO()
 
-    status = main(["Hello"], transport=lambda _request: {}, error_output=error_output)
+    status = main(["Hello"], model=lambda _settings, _messages: {}, error_output=error_output)
 
     assert status == 1
     assert error_output.getvalue().strip() == "Model response does not contain text content."
@@ -86,7 +89,7 @@ def test_cli_displays_simulated_text_without_credentials(monkeypatch):
 
     status = main(
         ["Hello"],
-        transport=lambda _request: {"choices": [{"message": {"content": "Simulated reply"}}]},
+        model=lambda _settings, _messages: {"choices": [{"message": {"content": "Simulated reply"}}]},
         output=output,
     )
 

@@ -18,13 +18,13 @@ Agent Lab 是一个公开的 Python 工程实验室，用于学习和构建可�
 
 ## 第一阶段
 
-第一阶段先建立 CLI 到阿里云百炼的同步直接调用：
+当前切片增加一个受控 Runtime 和一个确定性的 `calculate` 工具：
 
 ```text
-CLI 输入 → 百炼 API → 返回结果处理 → CLI 输出
+CLI 输入 → 模型决策 → 可选的受控计算 → 模型最终回答
 ```
 
-本阶段不包含工具调用、文件操作、Planning、Memory 或其他中间 Agent 行为。详细需求见[第一阶段需求](docs/requirements/phase-1.zh-CN.md)。
+Runtime 最多允许两次模型调用。文件操作、Planning、Memory 和其他工具仍然排除。详细需求见[第一阶段需求](docs/requirements/phase-1.zh-CN.md)。
 
 ## 范围边界
 

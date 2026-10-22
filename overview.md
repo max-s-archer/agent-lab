@@ -69,13 +69,16 @@ The confirmed first phase includes:
 - handling and displaying the returned model response;
 - configuration and transport errors reported without exposing credentials;
 - simulated response tests for request construction and response handling;
-- one real-model smoke validation after implementation is separately authorized.
+- a bounded runtime with at most two model calls;
+- one deterministic `calculate` tool;
+- validation for unknown tools and invalid arguments;
+- simulated-model tests for direct answers, tool success, and step limits.
 
 ## Non-goals
 
 The first phase is not intended to:
 
-- implement tool calling or a multi-step agent loop;
+- implement file, shell, or other non-calculation tools;
 - create a general-purpose agent platform;
 - support arbitrary shell commands;
 - modify files or system state through model-generated instructions;
