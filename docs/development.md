@@ -22,16 +22,16 @@ Copy `.env.example` to a local `.env` only when implementation needs it. Put the
 
 ## Current boundary
 
-The implementation has not been created yet. This guide records the confirmed baseline only. A future CLI must send one input directly to the model and display or report its response. It must not add tools, file operations, planning, memory, or another model round trip in Phase 1.
+The simulated CLI is implemented in `src/agent_lab/`. It sends one input directly to the model boundary and displays the returned text. Tests replace the network transport. The CLI must not add tools, file operations, planning, memory, or another model round trip in Phase 1. A real Model Studio call still requires separate authorization.
 
-## Planned commands
+## Validation commands
 
-The following commands are planned after the implementation is authorized:
+The simulated CLI slice uses these offline checks:
 
 ```text
-uv sync
+uv sync --dev
 uv run pytest
 uv run ruff check .
 ```
 
-Do not report any of these commands as executed until a validation record shows the actual result.
+The latest execution result is recorded in [Validation Guide](validation.md). Do not report a new run unless its result is recorded separately.

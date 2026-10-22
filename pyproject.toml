@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "agent-lab"
 version = "0.1.0"
@@ -5,6 +9,9 @@ description = "A Python laboratory for learning controlled LLM agent runtimes."
 requires-python = ">=3.12"
 readme = "README.md"
 license = "Apache-2.0"
+
+[project.scripts]
+agent-lab = "agent_lab.cli:main"
 
 [dependency-groups]
 dev = [

@@ -4,7 +4,7 @@
 
 Confirmed for the initial API-call slice.
 
-This document is the authoritative Phase 1 requirement. It defines only the direct model-call slice; it does not authorize creating the project configuration or implementation until the author separately authorizes that work.
+This document is the authoritative Phase 1 requirement. The simulated CLI slice is authorized. A real Model Studio call still requires separate authorization.
 
 ## Objective
 

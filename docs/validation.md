@@ -14,9 +14,9 @@ git diff --check
 
 Also inspect the changed Markdown links and confirm that bilingual counterparts describe the same behavior.
 
-## Planned automated checks
+## Automated checks
 
-After implementation exists, run:
+For the simulated CLI implementation, run:
 
 ```text
 uv run pytest
@@ -31,4 +31,12 @@ A real Model Studio call requires separate authorization. Its result must be rec
 
 ## Current evidence
 
-No project installation, test, lint, or real model call has been run for this baseline. The project implementation has not yet been created.
+On 2026-10-15, the simulated CLI slice was checked with:
+
+```text
+uv sync --dev
+uv run pytest
+uv run ruff check .
+```
+
+The environment resolved CPython 3.12.15. Pytest reported 7 passed, and Ruff reported all checks passed after fixing two import-order findings. No real Model Studio call has been made.
