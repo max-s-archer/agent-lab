@@ -32,7 +32,7 @@ The interaction is synchronous. The model provider is Alibaba Cloud Model Studio
 
 - The CLI accepts one user input and starts one runtime run.
 - The model may return text directly.
-- The model may request `calculate` once with an explicit operation and numeric operands.
+- The real model request declares the local `calculate` tool so the provider can request it.
 - The Runtime validates the tool name and arguments before execution.
 - A tool result is returned to the model, which must then provide the final text.
 - The Runtime allows at most two model calls and one tool call.

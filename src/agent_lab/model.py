@@ -45,11 +45,21 @@ def extract_decision(response: Mapping[str, Any]) -> tuple[str | None, Mapping[s
             raise ResponseFormatError("Model response must request at most one tool.")
         function = tool_calls[0].get("function", {})
         name = function.get("name")
-        arguments = function.get("arguments", {})
+        arguments = _decode_arguments(function.get("arguments", {}))
         if not isinstance(name, str) or not isinstance(arguments, Mapping):
             raise ResponseFormatError("Model response does not contain a valid tool request.")
-        return None, {"name": name, "arguments": arguments}
+        call_id = tool_calls[0].get("id") or "calculate-call"
+        return None, {"id": call_id, "name": name, "arguments": arguments}
     return extract_text(response), None
+
+
+def _decode_arguments(arguments: Any) -> Mapping[str, Any] | None:
+    if isinstance(arguments, str):
+        try:
+            arguments = json.loads(arguments)
+        except json.JSONDecodeError:
+            return None
+    return arguments if isinstance(arguments, Mapping) else None
 
 
 def _message(response: Mapping[str, Any]) -> Mapping[str, Any]:

@@ -1,10 +1,31 @@
 """Bounded runtime for one direct answer or one calculation."""
 
+import json
 from collections.abc import Mapping
 from decimal import Decimal, InvalidOperation
 
 from agent_lab.model import ResponseFormatError, extract_decision
 
+CALCULATE_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "calculate",
+        "description": "Perform one deterministic arithmetic operation.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "operation": {
+                    "type": "string",
+                    "enum": ["add", "subtract", "multiply", "divide"],
+                },
+                "left": {"type": "number"},
+                "right": {"type": "number"},
+            },
+            "required": ["operation", "left", "right"],
+            "additionalProperties": False,
+        },
+    },
+}
 MAX_MODEL_CALLS = 2
 OPERATIONS = {
     "add": lambda left, right: left + right,
@@ -34,26 +55,57 @@ def calculate(arguments: Mapping[str, object]) -> str:
         raise ToolError("Invalid calculate arguments.") from error
 
 
-def run_agent(settings, user_input: str, model) -> str:
+def run_agent(settings, user_input: str, model, trace=None) -> str:
     """Run at most two model decisions and one validated calculation."""
 
-    messages: list[dict[str, str]] = [{"role": "user", "content": user_input}]
+    messages: list[dict] = [{"role": "user", "content": user_input}]
     for _ in range(MAX_MODEL_CALLS):
-        response = model(settings, messages)
+        response = model(settings, messages, trace)
         text, tool_request = extract_decision(response)
         if text is not None:
             return text
         if tool_request["name"] != "calculate":
             raise ToolError(f"Unknown tool: {tool_request['name']}.")
         result = calculate(tool_request["arguments"])
-        messages.append({"role": "tool", "name": "calculate", "content": result})
+        messages.append(
+            {
+                "role": "assistant",
+                "tool_calls": [
+                    {
+                        "id": tool_request["id"],
+                        "type": "function",
+                        "function": {
+                            "name": tool_request["name"],
+                            "arguments": json.dumps(tool_request["arguments"]),
+                        },
+                    }
+                ],
+            }
+        )
+        messages.append(
+            {
+                "role": "tool",
+                "tool_call_id": tool_request["id"],
+                "content": result,
+            }
+        )
+        if trace is not None:
+            trace.append({"direction": "local-tool", "name": "calculate", "result": result})
     raise ResponseFormatError("Model call limit reached.")
 
 
-def complete_once(settings, messages, transport):
+def complete_once(settings, messages, transport, trace=None):
     """Adapt the existing single-call transport to the runtime model boundary."""
 
-    return transport(
+    payload = {
+        "model": settings.model,
+        "messages": messages,
+        "tools": [CALCULATE_TOOL],
+        "tool_choice": "auto",
+    }
+    if trace is not None:
+        trace.append({"direction": "request", "body": payload})
+    response = transport(
         {
             "method": "POST",
             "url": f"{settings.base_url}/chat/completions",
@@ -62,6 +114,9 @@ def complete_once(settings, messages, transport):
                 "Authorization": f"Bearer {settings.api_key}",
                 "Content-Type": "application/json",
             },
-            "json": {"model": settings.model, "messages": messages},
+            "json": payload,
         }
     )
+    if trace is not None:
+        trace.append({"direction": "response", "body": response})
+    return response

@@ -65,7 +65,9 @@ def test_transport_failure_is_distinct(monkeypatch):
 
     status = main(
         ["Hello"],
-        model=lambda _settings, _messages: (_ for _ in ()).throw(TransportError("Model request failed.")),
+        model=lambda _settings, _messages, _trace=None: (_ for _ in ()).throw(
+            TransportError("Model request failed.")
+        ),
         error_output=error_output,
     )
 
@@ -77,7 +79,7 @@ def test_malformed_response_is_distinct(monkeypatch):
     monkeypatch.setenv(CREDENTIAL_VARIABLE, "test-key")
     error_output = StringIO()
 
-    status = main(["Hello"], model=lambda _settings, _messages: {}, error_output=error_output)
+    status = main(["Hello"], model=lambda _settings, _messages, _trace=None: {}, error_output=error_output)
 
     assert status == 1
     assert error_output.getvalue().strip() == "Model response does not contain text content."
@@ -89,7 +91,7 @@ def test_cli_displays_simulated_text_without_credentials(monkeypatch):
 
     status = main(
         ["Hello"],
-        model=lambda _settings, _messages: {"choices": [{"message": {"content": "Simulated reply"}}]},
+        model=lambda _settings, _messages, _trace=None: {"choices": [{"message": {"content": "Simulated reply"}}]},
         output=output,
     )
 

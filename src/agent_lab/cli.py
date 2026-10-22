@@ -25,7 +25,9 @@ def main(argv: list[str] | None = None, model=None, output=None, error_output=No
     try:
         settings = load_settings()
         selected_model = (
-            (lambda runtime_settings, messages: complete_once(runtime_settings, messages, send_request))
+            (lambda runtime_settings, messages, trace=None: complete_once(
+                runtime_settings, messages, send_request, trace
+            ))
             if model is None
             else model
         )
