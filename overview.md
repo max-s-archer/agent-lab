@@ -70,15 +70,15 @@ The confirmed first phase includes:
 - configuration and transport errors reported without exposing credentials;
 - simulated response tests for request construction and response handling;
 - a bounded runtime with at most two model calls;
-- one deterministic `calculate` tool;
-- validation for unknown tools and invalid arguments;
+- one read-only `list_workspace_files` tool that returns bounded file names;
+- validation for unknown tools, invalid arguments, and directory traversal;
 - simulated-model tests for direct answers, tool success, and step limits.
 
 ## Non-goals
 
 The first phase is not intended to:
 
-- implement file, shell, or other non-calculation tools;
+- read file contents or implement file writes, shell, or other tools;
 - create a general-purpose agent platform;
 - support arbitrary shell commands;
 - modify files or system state through model-generated instructions;

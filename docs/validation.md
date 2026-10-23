@@ -40,7 +40,7 @@ uv run pytest
 uv run ruff check .
 ```
 
-The environment resolved CPython 3.12.15. Pytest reported 17 passed, and Ruff reported all checks passed. Simulated responses do not open a network connection.
+The environment resolved CPython 3.12.15. Pytest reported 21 passed, and Ruff reported all checks passed. Directory boundary tests use temporary workspaces. Simulated responses do not open a network connection.
 
 ### Real API smoke test
 
@@ -56,4 +56,10 @@ The call used `qwen3.8-flash`, the confirmed compatible endpoint, and `DASHSCOPE
 
 On 2026-10-15, one authorized tool-calling flow was run with the same model and credential variable. The prompt requested `calculate` to add 2 and 3.
 
-The first model response requested `calculate` with operation `add`, left `2`, and right `3`. The local runtime returned `5`, and the second model response returned `result=5`. No credential value was recorded. This smoke result is separate from the offline tests.
+The first model response requested `calculate` with operation `add`, left `2`, and right `3`. The local runtime returned `5`, and the second model response returned `result=5`. No credential value was recorded. This calculation result is separate from the offline tests.
+
+### Real directory-list smoke test
+
+On 2026-10-15, one authorized directory-list flow used `AGENT_LAB_WORKSPACE=/Users/v_zhangzheming/GitHubProjects/agent-lab`. The model requested `list_workspace_files` with relative directory `.`.
+
+The local tool returned 11 repository-root file names and no file contents. The model's second response repeated those names. No credential value was recorded. This result is separate from the offline boundary tests.

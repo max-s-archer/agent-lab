@@ -18,13 +18,13 @@ Agent Lab 是一个公开的 Python 工程实验室，用于学习和构建可�
 
 ## 第一阶段
 
-当前切片增加一个受控 Runtime 和一个确定性的 `calculate` 工具：
+当前切片增加受控 Runtime、`calculate` 和只读的 `list_workspace_files`：
 
 ```text
-CLI 输入 → 模型决策 → 可选的受控计算 → 模型最终回答
+CLI 输入 → 模型决策 → 可选的受控本地工具 → 模型最终回答
 ```
 
-Runtime 最多允许两次模型调用。文件操作、Planning、Memory 和其他工具仍然排除。详细需求见[第一阶段需求](docs/requirements/phase-1.zh-CN.md)。
+Runtime 最多允许两次模型调用。文件内容读取、写入、Planning 和 Memory 仍然排除。详细需求见[第一阶段需求](docs/requirements/phase-1.zh-CN.md)。
 
 ## 范围边界
 

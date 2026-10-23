@@ -63,5 +63,5 @@ Use English for commit messages, pull requests, issues, release notes, and other
 
 Phase 1 uses Python 3.12, `uv`, `pyproject.toml`, the `src/agent_lab/` layout, `pytest`, Ruff, and a synchronous CLI. It calls Alibaba Cloud Model Studio through the confirmed OpenAI-compatible endpoint, using `qwen3.8-flash`, `DASHSCOPE_API_KEY`, and a 30-second timeout.
 
-Follow [docs/development.md](docs/development.md) and [docs/validation.md](docs/validation.md). The current slice adds a bounded runtime with at most two model calls and the deterministic `calculate` tool. Do not add file operations or other tools, and do not report a model call or validation result unless the corresponding action was actually performed.
+Follow [docs/development.md](docs/development.md) and [docs/validation.md](docs/validation.md). The current slice adds a bounded runtime with at most two model calls, the deterministic `calculate` tool, and read-only `list_workspace_files`. Do not read file contents or add write operations, and do not report a model call or validation result unless the corresponding action was actually performed.
 

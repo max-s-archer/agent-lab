@@ -18,13 +18,13 @@ The project has three connected goals, in this priority order:
 
 ## First phase
 
-The current slice adds a bounded runtime and one deterministic `calculate` tool:
+The current slice adds a bounded runtime, `calculate`, and read-only `list_workspace_files`:
 
 ```text
-CLI input -> model decision -> optional validated calculation -> model final answer
+CLI input -> model decision -> optional validated local tool -> model final answer
 ```
 
-The runtime allows at most two model calls. File operations, planning, memory, and other tools remain excluded. The detailed requirements are defined in [Phase 1 Requirements](docs/requirements/phase-1.md).
+The runtime allows at most two model calls. File content, writes, planning, and memory remain excluded. The detailed requirements are defined in [Phase 1 Requirements](docs/requirements/phase-1.md).
 
 ## Scope boundaries
 

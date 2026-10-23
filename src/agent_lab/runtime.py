@@ -26,6 +26,19 @@ CALCULATE_TOOL = {
         },
     },
 }
+LIST_FILES_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "list_workspace_files",
+        "description": "List at most 20 file names inside the configured workspace.",
+        "parameters": {
+            "type": "object",
+            "properties": {"relative_directory": {"type": "string"}},
+            "required": ["relative_directory"],
+            "additionalProperties": False,
+        },
+    },
+}
 MAX_MODEL_CALLS = 2
 OPERATIONS = {
     "add": lambda left, right: left + right,
@@ -55,8 +68,20 @@ def calculate(arguments: Mapping[str, object]) -> str:
         raise ToolError("Invalid calculate arguments.") from error
 
 
+def execute_tool(tool_request: dict) -> str:
+    """Execute one registered tool after validating its name."""
+
+    from agent_lab.files import list_workspace_files
+
+    tools = {"calculate": calculate, "list_workspace_files": list_workspace_files}
+    name = tool_request["name"]
+    if name not in tools:
+        raise ToolError(f"Unknown tool: {name}.")
+    return tools[name](tool_request["arguments"])
+
+
 def run_agent(settings, user_input: str, model, trace=None) -> str:
-    """Run at most two model decisions and one validated calculation."""
+    """Run at most two model decisions and one validated tool call."""
 
     messages: list[dict] = [{"role": "user", "content": user_input}]
     for _ in range(MAX_MODEL_CALLS):
@@ -64,9 +89,9 @@ def run_agent(settings, user_input: str, model, trace=None) -> str:
         text, tool_request = extract_decision(response)
         if text is not None:
             return text
-        if tool_request["name"] != "calculate":
+        if tool_request["name"] not in {"calculate", "list_workspace_files"}:
             raise ToolError(f"Unknown tool: {tool_request['name']}.")
-        result = calculate(tool_request["arguments"])
+        result = execute_tool(tool_request)
         messages.append(
             {
                 "role": "assistant",
@@ -90,7 +115,7 @@ def run_agent(settings, user_input: str, model, trace=None) -> str:
             }
         )
         if trace is not None:
-            trace.append({"direction": "local-tool", "name": "calculate", "result": result})
+            trace.append({"direction": "local-tool", "name": tool_request["name"], "result": result})
     raise ResponseFormatError("Model call limit reached.")
 
 
@@ -100,7 +125,7 @@ def complete_once(settings, messages, transport, trace=None):
     payload = {
         "model": settings.model,
         "messages": messages,
-        "tools": [CALCULATE_TOOL],
+        "tools": [CALCULATE_TOOL, LIST_FILES_TOOL],
         "tool_choice": "auto",
     }
     if trace is not None:

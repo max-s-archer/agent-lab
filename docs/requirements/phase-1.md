@@ -10,7 +10,7 @@ This document is the authoritative Phase 1 requirement. The runtime slice uses s
 
 Establish a correct synchronous call from the CLI to Alibaba Cloud Model Studio and a practical understanding of the request and response boundary.
 
-The phase keeps the direct model call and adds one controlled decision point. The model may answer directly or request the deterministic `calculate` tool. The Runtime validates and executes that request, then gives the tool result back to the model. It does not add file operations, planning, memory, or another tool.
+The phase keeps the direct model call and controlled tool decision. The model may answer directly, calculate, or request a bounded read-only directory listing. The Runtime validates the request and returns the tool result to the model. It does not read file contents, write files, plan, or use memory.
 
 ## User-visible flow
 
@@ -19,7 +19,7 @@ The first phase should support this observable flow:
 ```text
 CLI input
   -> model decision
-  -> optional calculate validation and execution
+  -> optional calculate or bounded directory-list execution
   -> tool result returned to the model
   -> final answer or controlled stop
 ```
@@ -32,7 +32,9 @@ The interaction is synchronous. The model provider is Alibaba Cloud Model Studio
 
 - The CLI accepts one user input and starts one runtime run.
 - The model may return text directly.
-- The real model request declares the local `calculate` tool so the provider can request it.
+- The real model request declares the local `calculate` and `list_workspace_files` tools.
+- `list_workspace_files` accepts only a relative directory and returns at most 20 file names.
+- The Runtime resolves the directory and rejects paths outside the configured workspace, including symlink escapes.
 - The Runtime validates the tool name and arguments before execution.
 - A tool result is returned to the model, which must then provide the final text.
 - The Runtime allows at most two model calls and one tool call.
@@ -56,7 +58,8 @@ The Runtime should be testable without a real model API or network connection.
 The offline tests should cover:
 
 - direct answer;
-- successful calculation and final answer;
+- successful bounded directory listing;
+- directory traversal and symlink escape rejection;
 - unknown tool;
 - invalid calculation arguments;
 - model or transport failure;
@@ -79,7 +82,7 @@ Real model calls are used for integration and behavior smoke validation. They ar
 
 The following are not part of Phase 1:
 
-- tool calling beyond the single `calculate` tool;
+- reading file contents, writing files, or tool calling beyond the two confirmed tools;
 - planning systems;
 - persistent memory;
 - reflection loops;
@@ -99,8 +102,8 @@ Adding one of these capabilities requires a concrete problem statement, a compar
 Phase 1 is ready for review when:
 
 1. A direct model answer is displayed without tool execution.
-2. A valid `calculate` request is executed and its result is returned to the model.
-3. Unknown tools and invalid arguments do not execute the tool.
+2. A valid `calculate` or `list_workspace_files` request is executed and its result is returned to the model.
+3. Unknown tools, invalid arguments, and directory escapes do not execute the tool.
 4. The runtime stops at two model calls.
 5. Automated tests verify the behavior without network access.
 5. Credentials are not present in source, examples, or logs.
