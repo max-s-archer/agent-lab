@@ -1,5 +1,6 @@
 """Bounded runtime for one direct answer or one calculation."""
 
+import copy
 import json
 from collections.abc import Mapping
 from decimal import Decimal, InvalidOperation
@@ -129,7 +130,7 @@ def complete_once(settings, messages, transport, trace=None):
         "tool_choice": "auto",
     }
     if trace is not None:
-        trace.append({"direction": "request", "body": payload})
+        trace.append({"direction": "request", "body": copy.deepcopy(payload)})
     response = transport(
         {
             "method": "POST",

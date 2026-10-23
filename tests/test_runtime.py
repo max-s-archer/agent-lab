@@ -87,7 +87,28 @@ def test_invalid_calculate_arguments_are_rejected():
         calculate({"operation": "add", "left": "two", "right": 1})
 
 
-def test_model_call_limit_stops_second_tool_request():
+def test_trace_preserves_each_request_snapshot():
+    trace = []
+
+    def transport(request):
+        if len(request["json"]["messages"]) == 1:
+            return tool_response("calculate", {"operation": "add", "left": 2, "right": 3})
+        return text_response("The result is 5")
+
+    settings = load_settings(api_key="test-key")
+    answer = run_agent(
+        settings,
+        "Add 2 and 3",
+        lambda runtime_settings, messages, current_trace: complete_once(
+            runtime_settings, messages, transport, current_trace
+        ),
+        trace,
+    )
+
+    assert answer == "The result is 5"
+    assert len(trace[0]["body"]["messages"]) == 1
+    assert len(trace[3]["body"]["messages"]) == 3
+    assert trace[2] == {"direction": "local-tool", "name": "calculate", "result": "5"}
     def model(_settings, _messages, _trace=None):
         return tool_response("calculate", {"operation": "add", "left": 1, "right": 1})
 
