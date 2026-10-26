@@ -22,7 +22,7 @@ Copy `.env.example` to a local `.env` only when implementation needs it. Put the
 
 ## Current boundary
 
-The CLI sends the local `calculate` and read-only `list_workspace_files` tool definitions with each model request. Offline tests replace the network transport. The file tool lists names only inside its configured workspace and must not read file contents, write files, or follow paths outside that workspace. A new real Model Studio call requires separate authorization.
+The CLI also declares read-only `read_workspace_file`. It reads at most 8 KB of UTF-8 text from a regular file inside the configured workspace, rejects path escapes and sensitive file names, and must not write files. A new real Model Studio call requires separate authorization.
 
 ## Validation commands
 

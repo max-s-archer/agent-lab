@@ -40,6 +40,19 @@ LIST_FILES_TOOL = {
         },
     },
 }
+READ_FILE_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "read_workspace_file",
+        "description": "Read at most 8 KB of UTF-8 text from one workspace file.",
+        "parameters": {
+            "type": "object",
+            "properties": {"relative_file": {"type": "string"}},
+            "required": ["relative_file"],
+            "additionalProperties": False,
+        },
+    },
+}
 MAX_MODEL_CALLS = 2
 OPERATIONS = {
     "add": lambda left, right: left + right,
@@ -72,9 +85,13 @@ def calculate(arguments: Mapping[str, object]) -> str:
 def execute_tool(tool_request: dict) -> str:
     """Execute one registered tool after validating its name."""
 
-    from agent_lab.files import list_workspace_files
+    from agent_lab.files import list_workspace_files, read_workspace_file
 
-    tools = {"calculate": calculate, "list_workspace_files": list_workspace_files}
+    tools = {
+        "calculate": calculate,
+        "list_workspace_files": list_workspace_files,
+        "read_workspace_file": read_workspace_file,
+    }
     name = tool_request["name"]
     if name not in tools:
         raise ToolError(f"Unknown tool: {name}.")
@@ -90,7 +107,7 @@ def run_agent(settings, user_input: str, model, trace=None) -> str:
         text, tool_request = extract_decision(response)
         if text is not None:
             return text
-        if tool_request["name"] not in {"calculate", "list_workspace_files"}:
+        if tool_request["name"] not in {"calculate", "list_workspace_files", "read_workspace_file"}:
             raise ToolError(f"Unknown tool: {tool_request['name']}.")
         result = execute_tool(tool_request)
         messages.append(
@@ -126,7 +143,7 @@ def complete_once(settings, messages, transport, trace=None):
     payload = {
         "model": settings.model,
         "messages": messages,
-        "tools": [CALCULATE_TOOL, LIST_FILES_TOOL],
+        "tools": [CALCULATE_TOOL, LIST_FILES_TOOL, READ_FILE_TOOL],
         "tool_choice": "auto",
     }
     if trace is not None:

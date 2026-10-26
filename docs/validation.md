@@ -40,7 +40,7 @@ uv run pytest
 uv run ruff check .
 ```
 
-The environment resolved CPython 3.12.15. Pytest reported 21 passed, and Ruff reported all checks passed. Directory boundary tests use temporary workspaces. Simulated responses do not open a network connection.
+The environment resolved CPython 3.12.15. Pytest reported 23 passed, and Ruff reported all checks passed. File-read tests use temporary workspaces. Simulated responses do not open a network connection.
 
 ### Real API smoke test
 
@@ -63,3 +63,7 @@ The first model response requested `calculate` with operation `add`, left `2`, a
 On 2026-10-15, one authorized directory-list flow used `AGENT_LAB_WORKSPACE=/Users/v_zhangzheming/GitHubProjects/agent-lab`. The model requested `list_workspace_files` with relative directory `.`.
 
 The local tool returned 11 repository-root file names and no file contents. The model's second response repeated those names. No credential value was recorded. This result is separate from the offline boundary tests.
+
+### Real file-read smoke test
+
+On 2026-10-15, one authorized command-line call used `AGENT_LAB_WORKSPACE=/Users/v_zhangzheming/GitHubProjects/agent-lab` and `fixtures/sample-read.txt`. The command returned the fixture text exactly and exited with code 0. It did not print a credential or read another file. This result is separate from the offline tests.

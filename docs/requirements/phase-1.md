@@ -10,7 +10,7 @@ This document is the authoritative Phase 1 requirement. The runtime slice uses s
 
 Establish a correct synchronous call from the CLI to Alibaba Cloud Model Studio and a practical understanding of the request and response boundary.
 
-The phase keeps the direct model call and controlled tool decision. The model may answer directly, calculate, or request a bounded read-only directory listing. The Runtime validates the request and returns the tool result to the model. It does not read file contents, write files, plan, or use memory.
+The phase keeps the direct model call and controlled tool decision. The model may answer directly, calculate, list file names, or read one bounded text file. The Runtime validates the request and returns the tool result to the model. It does not write files, plan, or use memory.
 
 ## User-visible flow
 
@@ -19,7 +19,7 @@ The first phase should support this observable flow:
 ```text
 CLI input
   -> model decision
-  -> optional calculate or bounded directory-list execution
+  -> optional calculate, directory-list, or bounded text-read execution
   -> tool result returned to the model
   -> final answer or controlled stop
 ```
@@ -32,7 +32,9 @@ The interaction is synchronous. The model provider is Alibaba Cloud Model Studio
 
 - The CLI accepts one user input and starts one runtime run.
 - The model may return text directly.
-- The real model request declares the local `calculate` and `list_workspace_files` tools.
+- The real model request declares `calculate`, `list_workspace_files`, and `read_workspace_file`.
+- `read_workspace_file` reads at most 8 KB of UTF-8 text from one regular file.
+- The Runtime rejects absolute paths, parent-directory escapes, symlink escapes, binary content, oversized files, and sensitive names such as `.env`.
 - `list_workspace_files` accepts only a relative directory and returns at most 20 file names.
 - The Runtime resolves the directory and rejects paths outside the configured workspace, including symlink escapes.
 - The Runtime validates the tool name and arguments before execution.
@@ -58,7 +60,8 @@ The Runtime should be testable without a real model API or network connection.
 The offline tests should cover:
 
 - direct answer;
-- successful bounded directory listing;
+- successful bounded text-file read;
+- rejection of oversized, binary, and sensitive files;
 - directory traversal and symlink escape rejection;
 - unknown tool;
 - invalid calculation arguments;
@@ -82,7 +85,7 @@ Real model calls are used for integration and behavior smoke validation. They ar
 
 The following are not part of Phase 1:
 
-- reading file contents, writing files, or tool calling beyond the two confirmed tools;
+- writing files or tool calling beyond the three confirmed tools;
 - planning systems;
 - persistent memory;
 - reflection loops;

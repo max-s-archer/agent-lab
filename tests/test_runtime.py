@@ -5,6 +5,7 @@ from agent_lab.model import ResponseFormatError
 from agent_lab.runtime import (
     CALCULATE_TOOL,
     LIST_FILES_TOOL,
+    READ_FILE_TOOL,
     ToolError,
     calculate,
     complete_once,
@@ -34,7 +35,7 @@ def test_provider_request_declares_calculate_tool():
     settings = load_settings(api_key="test-key")
     complete_once(settings, [{"role": "user", "content": "Add 2 and 3"}], transport)
 
-    assert captured["json"]["tools"] == [CALCULATE_TOOL, LIST_FILES_TOOL]
+    assert captured["json"]["tools"] == [CALCULATE_TOOL, LIST_FILES_TOOL, READ_FILE_TOOL]
     assert captured["json"]["tool_choice"] == "auto"
 
 

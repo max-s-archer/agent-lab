@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from agent_lab.files import list_workspace_files
+from agent_lab.files import list_workspace_files, read_workspace_file
 from agent_lab.runtime import ToolError
 
 
@@ -55,3 +55,28 @@ def test_rejects_symlink_escape(tmp_path, monkeypatch):
 
     with pytest.raises(ToolError, match="escapes the workspace"):
         list_workspace_files({"relative_directory": "linked"})
+
+
+def test_reads_bounded_utf8_text(tmp_path, monkeypatch):
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    (workspace / "note.txt").write_text("hello", encoding="utf-8")
+    monkeypatch.setenv("AGENT_LAB_WORKSPACE", str(workspace))
+
+    assert read_workspace_file({"relative_file": "note.txt"}) == "hello"
+
+
+def test_rejects_sensitive_oversized_and_binary_files(tmp_path, monkeypatch):
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    (workspace / ".env").write_text("TOKEN=secret", encoding="utf-8")
+    (workspace / "large.txt").write_bytes(b"a" * 8193)
+    (workspace / "binary.txt").write_bytes(b"\xff")
+    monkeypatch.setenv("AGENT_LAB_WORKSPACE", str(workspace))
+
+    with pytest.raises(ToolError, match="not readable"):
+        read_workspace_file({"relative_file": ".env"})
+    with pytest.raises(ToolError, match="read limit"):
+        read_workspace_file({"relative_file": "large.txt"})
+    with pytest.raises(ToolError, match="not UTF-8"):
+        read_workspace_file({"relative_file": "binary.txt"})
