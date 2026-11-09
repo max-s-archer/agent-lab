@@ -30,7 +30,9 @@ CLI 输入
 
 ### 模型交互
 
-- CLI 接受一次用户输入并启动一次 Runtime。
+- 单次 CLI 命令接受一次用户输入并启动一次 Runtime。
+- `--interactive` 在当前进程内保留消息列表，每轮最多重发 8 条消息。
+- 进程退出后交互历史被丢弃。模型提供商不保持打开的会话。
 - 模型可以直接返回文本。
 - 真实模型请求会声明 `calculate`、`list_workspace_files` 和 `read_workspace_file`。
 - `read_workspace_file` 最多从一个普通文件读取 8 KB UTF-8 文本。

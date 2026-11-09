@@ -54,6 +54,7 @@ READ_FILE_TOOL = {
     },
 }
 MAX_MODEL_CALLS = 2
+MAX_HISTORY_MESSAGES = 8
 OPERATIONS = {
     "add": lambda left, right: left + right,
     "subtract": lambda left, right: left - right,
@@ -98,15 +99,16 @@ def execute_tool(tool_request: dict) -> str:
     return tools[name](tool_request["arguments"])
 
 
-def run_agent(settings, user_input: str, model, trace=None) -> str:
-    """Run at most two model decisions and one validated tool call."""
+def run_turn(settings, history: list[dict], user_input: str, model, trace=None) -> tuple[str, list[dict]]:
+    """Run one bounded turn and return the updated local history."""
 
-    messages: list[dict] = [{"role": "user", "content": user_input}]
+    messages = [*history, {"role": "user", "content": user_input}]
     for _ in range(MAX_MODEL_CALLS):
         response = model(settings, messages, trace)
         text, tool_request = extract_decision(response)
         if text is not None:
-            return text
+            messages.append({"role": "assistant", "content": text})
+            return text, messages
         if tool_request["name"] not in {"calculate", "list_workspace_files", "read_workspace_file"}:
             raise ToolError(f"Unknown tool: {tool_request['name']}.")
         result = execute_tool(tool_request)
@@ -125,16 +127,16 @@ def run_agent(settings, user_input: str, model, trace=None) -> str:
                 ],
             }
         )
-        messages.append(
-            {
-                "role": "tool",
-                "tool_call_id": tool_request["id"],
-                "content": result,
-            }
-        )
+        messages.append({"role": "tool", "tool_call_id": tool_request["id"], "content": result})
         if trace is not None:
             trace.append({"direction": "local-tool", "name": tool_request["name"], "result": result})
     raise ResponseFormatError("Model call limit reached.")
+
+
+def run_agent(settings, user_input: str, model, trace=None) -> str:
+    """Run one turn without preexisting history."""
+
+    return run_turn(settings, [], user_input, model, trace)[0]
 
 
 def complete_once(settings, messages, transport, trace=None):

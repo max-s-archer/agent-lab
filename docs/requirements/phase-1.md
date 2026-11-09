@@ -30,7 +30,9 @@ The interaction is synchronous. The model provider is Alibaba Cloud Model Studio
 
 ### Model interaction
 
-- The CLI accepts one user input and starts one runtime run.
+- A one-shot CLI command accepts one user input and starts one runtime run.
+- `--interactive` keeps a local in-process message list and resends at most 8 messages on each turn.
+- Interactive history is discarded when the process exits. The provider does not keep an open session.
 - The model may return text directly.
 - The real model request declares `calculate`, `list_workspace_files`, and `read_workspace_file`.
 - `read_workspace_file` reads at most 8 KB of UTF-8 text from one regular file.

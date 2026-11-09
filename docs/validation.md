@@ -40,7 +40,7 @@ uv run pytest
 uv run ruff check .
 ```
 
-The environment resolved CPython 3.12.15. Pytest reported 23 passed, and Ruff reported all checks passed. File-read tests use temporary workspaces. Simulated responses do not open a network connection.
+The environment resolved CPython 3.12.15. Pytest reported 25 passed, and Ruff reported all checks passed. Interactive tests use simulated responses. Simulated responses do not open a network connection.
 
 ### Real API smoke test
 
@@ -67,3 +67,9 @@ The local tool returned 11 repository-root file names and no file contents. The 
 ### Real file-read smoke test
 
 On 2026-10-15, one authorized command-line call used `AGENT_LAB_WORKSPACE=/Users/v_zhangzheming/GitHubProjects/agent-lab` and `fixtures/sample-read.txt`. The command returned the fixture text exactly and exited with code 0. It did not print a credential or read another file. This result is separate from the offline tests.
+
+### Real interactive-session smoke test
+
+On 2026-10-15, one authorized `agent-lab --interactive` process received two prompts and then `exit`. The first prompt supplied the code word `blue-heron`; the second asked for that code word, and the model returned `blue-heron`.
+
+The history remained in the local process memory as a list capped at 8 messages. The process exited with code 0 and did not persist the conversation or print a credential. This result is separate from the offline tests.
