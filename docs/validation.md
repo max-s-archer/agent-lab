@@ -40,7 +40,7 @@ uv run pytest
 uv run ruff check .
 ```
 
-The environment resolved CPython 3.12.15. Pytest reported 25 passed, and Ruff reported all checks passed. Interactive tests use simulated responses. Simulated responses do not open a network connection.
+The environment resolved CPython 3.12.15. Pytest reported 27 passed, and Ruff reported all checks passed. Interactive and trace tests use simulated responses. Simulated responses do not open a network connection.
 
 ### Real API smoke test
 
