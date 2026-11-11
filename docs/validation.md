@@ -73,3 +73,7 @@ On 2026-10-15, one authorized command-line call used `AGENT_LAB_WORKSPACE=/Users
 On 2026-10-15, one authorized `agent-lab --interactive` process received two prompts and then `exit`. The first prompt supplied the code word `blue-heron`; the second asked for that code word, and the model returned `blue-heron`.
 
 The history remained in the local process memory as a list capped at 8 messages. The process exited with code 0 and did not persist the conversation or print a credential. This result is separate from the offline tests.
+
+### Real JSONL trace smoke test
+
+On 2026-10-15, one authorized command returned `trace-ok` and wrote `traces/<run-id>.jsonl`. The file contained three events in order: request, response, and `run_finished` with status `completed`. Every event had the same run ID. The trace contained neither the API key nor an Authorization bearer value. The generated trace file remains gitignored and is not committed.

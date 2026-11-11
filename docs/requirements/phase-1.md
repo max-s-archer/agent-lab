@@ -42,6 +42,7 @@ The interaction is synchronous. The model provider is Alibaba Cloud Model Studio
 - The Runtime validates the tool name and arguments before execution.
 - A tool result is returned to the model, which must then provide the final text.
 - The Runtime allows at most two model calls and one tool call.
+- Unknown tools, invalid arguments, model failures, and step limits stop with distinguishable messages.
 - Each run writes a local JSONL trace with a run ID, request and response events, tool results, and a final status.
 - Traces redact credentials and are not durable conversation memory.
 
