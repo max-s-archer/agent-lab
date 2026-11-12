@@ -2,7 +2,7 @@
 
 ## Status
 
-Planning
+Phase 1 implemented
 
 ## Problem
 
@@ -64,21 +64,24 @@ Python implementation details, CLI interaction, and desktop-specific tools must 
 
 The confirmed first phase includes:
 
-- a synchronous CLI;
+- a synchronous one-shot CLI and a local `--interactive` session;
 - one direct request from CLI input to Alibaba Cloud Model Studio;
 - handling and displaying the returned model response;
 - configuration and transport errors reported without exposing credentials;
 - simulated response tests for request construction and response handling;
-- a bounded runtime with at most two model calls;
-- one read-only `list_workspace_files` tool that returns bounded file names;
-- validation for unknown tools, invalid arguments, and directory traversal;
+- a bounded runtime with at most two model calls and one tool call;
+- `calculate`, read-only `list_workspace_files`, and read-only `read_workspace_file`;
+- file reads limited to 8 KB of UTF-8 text, and directory lists limited to 20 names;
+- validation for unknown tools, invalid arguments, and path escapes;
+- local interactive history capped at 8 messages and discarded when the process exits;
+- one redacted local JSONL trace per run;
 - simulated-model tests for direct answers, tool success, and step limits.
 
 ## Non-goals
 
 The first phase is not intended to:
 
-- read file contents or implement file writes, shell, or other tools;
+- implement file writes, shell, or tools beyond the three confirmed tools;
 - create a general-purpose agent platform;
 - support arbitrary shell commands;
 - modify files or system state through model-generated instructions;
@@ -89,11 +92,12 @@ The first phase is not intended to:
 
 ## Success criteria
 
-The first phase is successful when the author can explain, test, and observe one direct model call, including:
+The first phase is successful when the author can explain, test, and observe one bounded turn:
 
 - how CLI input becomes a provider request;
 - how a text response is handled and displayed;
-- how configuration, transport, and malformed-response failures are distinguished;
+- how the runtime validates and executes one requested tool;
+- how configuration, transport, tool, and malformed-response failures are distinguished;
 - how tests verify the behavior without network access;
 - how credentials stay out of source, examples, and logs.
 

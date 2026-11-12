@@ -6,7 +6,7 @@ The project uses a CLI as its first interaction surface and focuses on understan
 
 ## Status
 
-Planning
+Phase 1 implemented
 
 ## Goals
 

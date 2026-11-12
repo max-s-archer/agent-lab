@@ -109,13 +109,14 @@ Adding one of these capabilities requires a concrete problem statement, a compar
 Phase 1 is ready for review when:
 
 1. A direct model answer is displayed without tool execution.
-2. A valid `calculate` or `list_workspace_files` request is executed and its result is returned to the model.
-3. Unknown tools, invalid arguments, and directory escapes do not execute the tool.
+2. A valid request for `calculate`, `list_workspace_files`, or `read_workspace_file` is executed.
+   Its result returns to the model.
+3. Unknown tools, invalid arguments, and path escapes do not execute the tool.
 4. The runtime stops at two model calls.
 5. Automated tests verify the behavior without network access.
-5. Credentials are not present in source, examples, or logs.
-6. One real Model Studio smoke call is recorded separately from offline evidence.
-7. The author can explain the CLI, provider adapter, request, and response responsibilities.
+6. Credentials are not present in source, examples, or logs.
+7. One real Model Studio smoke call is recorded separately from offline evidence.
+8. The author can explain the CLI, provider adapter, request, and response responsibilities.
 
 The public contribution and release workflow remains `To be decided`.
 
