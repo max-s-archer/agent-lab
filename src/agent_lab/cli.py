@@ -31,23 +31,39 @@ def selected_model(model):
     )
 
 
+def finish_cancelled(trace, error_output, interrupted: bool) -> int:
+    """Record one user cancellation without treating it as success or failure."""
+
+    trace.append({"event": "run_finished", "status": "cancelled"})
+    if interrupted:
+        print("Cancelled.", file=error_output)
+        return 130
+    return 0
+
+
 def run_interactive(settings, model, input_func, output, error_output, trace) -> int:
-    """Read prompts until exit and resend only this process's history."""
+    """Read prompts until the user exits and resend only this process's history."""
 
     messages = []
     while True:
-        prompt = input_func("agent-lab> ")
+        try:
+            prompt = input_func("agent-lab> ")
+        except EOFError:
+            return finish_cancelled(trace, error_output, interrupted=False)
+        except KeyboardInterrupt:
+            return finish_cancelled(trace, error_output, interrupted=True)
         if prompt is None or prompt.strip().casefold() in EXIT_COMMANDS:
-            trace.append({"event": "run_finished", "status": "completed"})
-            return 0
+            return finish_cancelled(trace, error_output, interrupted=False)
         if not prompt.strip():
             continue
         try:
             answer, messages = run_turn(settings, messages, prompt, model, trace)
         except (TransportError, ResponseFormatError, ToolError) as error:
-            trace.append({"event": "run_finished", "status": "error", "message": str(error)})
+            trace.append({"event": "turn_failed", "message": str(error)})
             print(error, file=error_output)
             continue
+        except KeyboardInterrupt:
+            return finish_cancelled(trace, error_output, interrupted=True)
         messages = messages[-MAX_HISTORY_MESSAGES:]
         print(answer, file=output)
 
@@ -87,4 +103,9 @@ def main(
             active_trace.append({"event": "run_finished", "status": "error", "message": str(error)})
         print(error, file=error_output)
         return 1
+    except KeyboardInterrupt:
+        if "active_trace" in locals():
+            active_trace.append({"event": "run_finished", "status": "cancelled"})
+        print("Cancelled.", file=error_output)
+        return 130
     return 0

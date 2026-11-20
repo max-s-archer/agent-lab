@@ -42,6 +42,11 @@ uv run ruff check .
 
 The environment resolved CPython 3.12.15. Pytest reported 27 passed, and Ruff reported all checks passed. Interactive and trace tests use simulated responses. Simulated responses do not open a network connection.
 
+On 2026-11-11, the stop-status slice was checked with the same commands.
+Pytest reported 31 passed, and Ruff reported all checks passed.
+The added tests simulate `quit`, end of input, Ctrl+C, and one failed turn.
+They do not open a network connection.
+
 ### Real API smoke test
 
 On 2026-10-15, one authorized Model Studio call was run:

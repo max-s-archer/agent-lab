@@ -26,6 +26,9 @@ The CLI declares read-only `read_workspace_file`. It reads at most 8 KB of UTF-8
 
 `agent-lab --interactive` keeps conversation history in the local process and resends at most 8 messages on each turn. Closing the process discards that history. The provider does not keep an open session.
 
+`exit`, `quit`, end of input, and Ctrl+C record `cancelled`.
+A failed turn records `turn_failed` and continues.
+
 Each run writes `traces/<run-id>.jsonl`. The directory is ignored by Git. Traces omit authorization values and are discarded from version control; they are not long-term memory. A new real Model Studio call requires separate authorization.
 
 ## Validation commands

@@ -43,6 +43,10 @@ The interaction is synchronous. The model provider is Alibaba Cloud Model Studio
 - A tool result is returned to the model, which must then provide the final text.
 - The Runtime allows at most two model calls and one tool call.
 - Unknown tools, invalid arguments, model failures, and step limits stop with distinguishable messages.
+- A finished run uses one status: `completed`, `error`, or `cancelled`.
+- One-shot success is `completed`. One-shot failure is `error`. Ctrl+C is `cancelled`.
+- Interactive `exit`, `quit`, end of input, and Ctrl+C finish the run as `cancelled`.
+- A failed interactive turn records `turn_failed` and leaves the session open.
 - Each run writes a local JSONL trace with a run ID, request and response events, tool results, and a final status.
 - Traces redact credentials and are not durable conversation memory.
 
